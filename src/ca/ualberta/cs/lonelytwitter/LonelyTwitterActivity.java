@@ -48,7 +48,31 @@ public class LonelyTwitterActivity extends Activity {
 
 	@Override
 	protected void onStart() {
-		// TODO Auto-generated method stub
+		
+		// Added in lab
+		
+		User u = new Author("joe");
+			try {
+			u.setName("joe2");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		// ArrayList of type User
+		ArrayList<User> x = new ArrayList<User>();
+		
+		/*
+		// Catching exception if anything using setName throws one
+		try {
+			// Java happy b/c we declared all classes must have setName
+			u.setName("joe2");
+		} catch(IOException e) {
+			// some code that tells the user to use a shorter name
+		}
+		*/
+		
+		//
+		
 		super.onStart();
 		String[] tweets = loadFromFile();
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
