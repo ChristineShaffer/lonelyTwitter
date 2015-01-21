@@ -6,8 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import android.app.Activity;
 import android.content.Context;
@@ -84,15 +89,16 @@ public class LonelyTwitterActivity extends Activity {
 	}
 
 	private ArrayList<String> loadFromFile() {
+		Gson gson = new Gson();
 		ArrayList<String> tweets = new ArrayList<String>();
 		try {
 			FileInputStream fis = openFileInput(FILENAME);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			String line = in.readLine();
-			while (line != null) {
-				tweets.add(line);
-				line = in.readLine();
-			}
+			//https://sites.google.com/site/gson/gson-user-guide 2015-01-21
+			Type dataType = new TypeToken<ArrayList<String>>() {}.getType(); // *****************This class and this instance only exist on this line of code
+			// Wrap fip
+			InputStreamReader isr = new InputStreamReader(fis);
+			tweets = gson.fromJson(isr, dataType);
+			fis.close();
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -101,16 +107,26 @@ public class LonelyTwitterActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		if (tweets == null) {
+			tweets = new ArrayList<String>();
+		}
+		
 		return tweets;
 	}
 	
 	private void saveInFile(String text, Date date) {
+		Gson gson = new Gson();
 		try {
+			// openFileOutput is from a superclass 
+			// Defined to open a file specific to our app & delete everything in it
 			FileOutputStream fos = openFileOutput(FILENAME,
-					Context.MODE_APPEND);
-			fos.write(new String(date.toString() + " | " + text)
-					.getBytes());
+					0); // 0 = Context.MODE_WRITE
+			// Need this b/c it's an appendable output
+			OutputStreamWriter osw = new OutputStreamWriter(fos);
+			gson.toJson(tweets, osw);
 			fos.close();
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,4 +135,5 @@ public class LonelyTwitterActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
+	
 }
