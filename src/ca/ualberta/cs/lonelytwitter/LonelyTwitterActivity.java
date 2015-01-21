@@ -125,6 +125,7 @@ public class LonelyTwitterActivity extends Activity {
 			// Need this b/c it's an appendable output
 			OutputStreamWriter osw = new OutputStreamWriter(fos);
 			gson.toJson(tweets, osw);
+			osw.flush();
 			fos.close();
 			
 		} catch (FileNotFoundException e) {
